@@ -99,7 +99,7 @@
       margin: 0 auto;
     }
 
-    /* 主畫面與插圖（填滿剩餘空間） */
+    /* 主畫面與插圖 */
     .stage-card {
       background: #0d0d18;
       border: 2px solid #333;
@@ -111,6 +111,7 @@
       flex-direction: column;
       justify-content: center;
       align-items: center;
+      cursor: pointer; /* 提示點擊跳過打字 */
     }
 
     .stage-icon {
@@ -125,12 +126,37 @@
       50% { transform: translateY(-10px); }
     }
 
+    /* 文字打字機區域與光標樣式 */
+    .story-text-container {
+      max-width: 800px;
+      min-height: 4em; /* 避免文字打字時高度跳動 */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
     .story-text {
       font-size: 1.2rem;
       line-height: 1.8;
       color: var(--text-color);
       text-align: center;
-      max-width: 800px;
+      white-space: pre-wrap;
+    }
+
+    /* 打字機閃爍光標 */
+    .typing-cursor {
+      display: inline-block;
+      width: 8px;
+      height: 1.2em;
+      background-color: var(--border-color);
+      vertical-align: middle;
+      margin-left: 4px;
+      animation: blink 0.7s infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
     }
 
     /* 結局等級標籤 */
@@ -196,6 +222,13 @@
       box-shadow: 0 2px 0 #000;
     }
 
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none !important;
+      box-shadow: 0 4px 0 #000 !important;
+    }
+
     .btn-restart {
       grid-column: span 2;
       background-color: var(--success-color);
@@ -235,10 +268,13 @@
       </div>
     </div>
 
-    <div class="stage-card">
+    <!-- 點擊中央卡片可直接跳過打字動畫，顯示完整文字 -->
+    <div class="stage-card" onclick="skipTypewriter()">
       <div id="grade-container"></div>
       <div class="stage-icon" id="stage-icon">🗺️</div>
-      <p class="story-text" id="story-text">正在載入冒險資訊...</p>
+      <div class="story-text-container">
+        <span class="story-text" id="story-text"></span><span class="typing-cursor" id="typing-cursor"></span>
+      </div>
     </div>
 
     <div class="controls">
@@ -359,12 +395,60 @@
     };
 
     let currentPath = "START";
+    let typewriterTimer = null;
+    let fullText = "";
+    let isTyping = false;
+    const typingSpeed = 40; // 打字速度：每個字 40 毫秒
+
+    // 打字機效果實作
+    function typeWriter(text, index = 0) {
+      const textElement = document.getElementById('story-text');
+      const cursorElement = document.getElementById('typing-cursor');
+      
+      if (index === 0) {
+        textElement.textContent = "";
+        cursorElement.style.display = "inline-block";
+        isTyping = true;
+        toggleButtons(true); // 打字時暫時禁用按鈕，防止連續快速點擊
+      }
+
+      if (index < text.length) {
+        textElement.textContent += text.charAt(index);
+        typewriterTimer = setTimeout(() => {
+          typeWriter(text, index + 1);
+        }, typingSpeed);
+      } else {
+        isTyping = false;
+        cursorElement.style.display = "none";
+        toggleButtons(false); // 打字結束恢復按鈕點擊
+      }
+    }
+
+    // 點擊中間卡片可以立即跳過打字，顯示完整文字
+    function skipTypewriter() {
+      if (isTyping) {
+        clearTimeout(typewriterTimer);
+        document.getElementById('story-text').textContent = fullText;
+        document.getElementById('typing-cursor').style.display = "none";
+        isTyping = false;
+        toggleButtons(false);
+      }
+    }
+
+    // 切換按鈕的可用狀態
+    function toggleButtons(disabled) {
+      const buttons = document.querySelectorAll('#action-buttons button');
+      buttons.forEach(btn => btn.disabled = disabled);
+    }
 
     function renderNode() {
+      // 換頁時先清除舊的打字定時器
+      if (typewriterTimer) clearTimeout(typewriterTimer);
+
       const node = storyTree[currentPath];
+      fullText = node.text;
 
       document.getElementById('stage-icon').textContent = node.icon;
-      document.getElementById('story-text').textContent = node.text;
       
       if (node.isEnding) {
         document.getElementById('stage-indicator').textContent = "STAGE: END";
@@ -385,9 +469,13 @@
           <button class="btn" onclick="makeChoice('R')">${node.rightBtn || "➡️ 向右走"}</button>
         `;
       }
+
+      // 啟動打字機效果
+      typeWriter(fullText);
     }
 
     function makeChoice(direction) {
+      if (isTyping) return; // 打字未完成時防止連續點擊
       if (currentPath === "START") {
         currentPath = direction;
       } else {
