@@ -24,7 +24,7 @@
       --particle-color: #73e86b;
     }
 
-    /* Dynamic Stage Themes */
+    /* Stage Background Themes */
     body.theme-forest {
       --bg-color: #0a120c;
       --card-bg: #132216;
@@ -80,14 +80,14 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      padding: 12px;
+      padding: 10px;
       background-size: 20px 20px;
       background-position: 0 0, 10px 10px;
-      transition: background-color 0.6s ease, color 0.6s ease;
+      transition: background-color 0.5s ease, color 0.5s ease;
       position: relative;
     }
 
-    /* Topmost Overlay Canvas for Gravel/Debris Effects */
+    /* Topmost Overlay Canvas for Falling Pixel Gravel/Debris Effects */
     #top-debris-canvas {
       position: fixed;
       top: 0;
@@ -102,21 +102,21 @@
     /* Compact & Fully Responsive Arcade Frame */
     .game-container {
       width: 100%;
-      max-width: 680px;
+      max-width: 620px;
       height: 100%;
-      max-height: 92dvh;
+      max-height: 94dvh;
       background-color: var(--card-bg);
       border: 4px solid var(--border-color);
       box-shadow: 0 0 25px rgba(0, 0, 0, 0.85), inset 0 0 15px rgba(0,0,0,0.8);
       border-radius: 12px;
-      padding: 16px;
+      padding: 12px 14px;
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 10px;
       position: relative;
       z-index: 5;
       overflow: hidden;
-      transition: border-color 0.6s ease, background-color 0.6s ease;
+      transition: border-color 0.5s ease, background-color 0.5s ease;
     }
 
     /* Screen Shake Animation */
@@ -141,45 +141,45 @@
       background-size: 100% 4px;
       z-index: 10;
       pointer-events: none;
-      opacity: 0.5;
+      opacity: 0.45;
     }
 
-    /* Compact Header & Progress Bar */
+    /* Header & Progress Status */
     .header {
       text-align: center;
       border-bottom: 2px dashed var(--border-color);
-      padding-bottom: 8px;
+      padding-bottom: 6px;
       flex-shrink: 0;
-      transition: border-color 0.6s ease;
+      transition: border-color 0.5s ease;
     }
 
     .game-title {
       font-family: 'Press Start 2P', 'Noto Sans TC', cursive;
-      font-size: 1.25rem;
+      font-size: 1.05rem;
       color: var(--highlight-color);
       text-shadow: 2px 2px #000;
-      margin-bottom: 6px;
+      margin-bottom: 4px;
       letter-spacing: 1px;
     }
 
     .status-bar {
       display: flex;
       justify-content: space-between;
-      font-size: 0.95rem;
+      font-size: 0.8rem;
       font-weight: 900;
       color: var(--border-color);
       font-family: monospace;
       max-width: 100%;
       margin: 0 auto;
-      transition: color 0.6s ease;
+      transition: color 0.5s ease;
     }
 
-    /* Center Stage Area - Adaptive Flexibility */
+    /* Center Stage Area */
     .stage-card {
       background: rgba(0, 0, 0, 0.45);
       border: 2px solid var(--border-color);
       border-radius: 8px;
-      padding: 16px 14px;
+      padding: 10px 12px;
       text-align: center;
       flex: 1;
       display: flex;
@@ -189,47 +189,47 @@
       cursor: pointer;
       position: relative;
       overflow: hidden;
-      transition: border-color 0.6s ease;
+      transition: border-color 0.5s ease;
     }
 
-    /* Floating Animated Pixel Emoji Icon */
+    /* Animated Pixel Icon */
     .stage-icon {
-      font-size: 4.5rem;
-      margin-bottom: 10px;
-      filter: drop-shadow(0 6px 10px rgba(0,0,0,0.8));
+      font-size: 3.2rem;
+      margin-bottom: 6px;
+      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.8));
       animation: float-bounce 2.2s infinite ease-in-out;
       flex-shrink: 0;
     }
 
     @keyframes float-bounce {
       0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-8px); }
+      50% { transform: translateY(-6px); }
     }
 
-    /* Typewriter Story Container */
+    /* Story Container */
     .story-text-container {
       width: 100%;
-      max-width: 580px;
+      max-width: 520px;
       display: flex;
       justify-content: center;
       align-items: center;
     }
 
     .story-text {
-      font-size: 1.15rem;
-      line-height: 1.7;
+      font-size: 0.95rem;
+      line-height: 1.6;
       font-weight: 700;
       color: var(--text-color);
       text-align: center;
       white-space: pre-wrap;
-      text-shadow: 1px 1px 3px #000;
+      text-shadow: 1px 1px 2px #000;
     }
 
-    /* Golden Flashing Cursor */
+    /* Flashing Cursor */
     .typing-cursor {
       display: inline-block;
-      width: 10px;
-      height: 1.1em;
+      width: 8px;
+      height: 1em;
       background-color: var(--highlight-color);
       vertical-align: middle;
       margin-left: 4px;
@@ -246,24 +246,24 @@
     .grade-badge {
       display: inline-block;
       font-family: 'Press Start 2P', cursive;
-      font-size: 1.25rem;
-      padding: 6px 14px;
+      font-size: 0.95rem;
+      padding: 4px 10px;
       border-radius: 6px;
-      margin-bottom: 12px;
+      margin-bottom: 8px;
       text-shadow: 2px 2px #000;
       flex-shrink: 0;
     }
 
-    .grade-SSR { background-color: #ff4757; color: #fff; border: 2px solid #ffa502; box-shadow: 0 0 12px #ff4757; }
+    .grade-SSR { background-color: #ff4757; color: #fff; border: 2px solid #ffa502; box-shadow: 0 0 10px #ff4757; }
     .grade-SR { background-color: #1e90ff; color: #fff; border: 2px solid #70a1ff; }
     .grade-NORMAL { background-color: #747d8c; color: #fff; }
     .grade-BAD { background-color: #2f3542; color: #ff6b81; border: 2px solid #ff4757; }
 
-    /* Control Panel & Responsive Touch Buttons */
+    /* Control Buttons Panel */
     .controls {
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 8px;
       z-index: 20;
       width: 100%;
       flex-shrink: 0;
@@ -272,25 +272,25 @@
     .btn-group {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 12px;
+      gap: 10px;
     }
 
     .btn {
       background-color: #1f2533;
       color: #fff;
       border: 2px solid var(--border-color);
-      padding: 14px 10px;
-      font-size: 1.05rem;
+      padding: 10px 8px;
+      font-size: 0.88rem;
       font-weight: 900;
       font-family: inherit;
       cursor: pointer;
       border-radius: 8px;
-      box-shadow: 0 4px 0 #000;
+      box-shadow: 0 3px 0 #000;
       transition: all 0.1s ease;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
+      gap: 6px;
       text-shadow: 1px 1px 2px #000;
     }
 
@@ -299,27 +299,30 @@
       color: #000;
       text-shadow: none;
       transform: translateY(-2px);
-      box-shadow: 0 6px 0 #000;
+      box-shadow: 0 5px 0 #000;
     }
 
     .btn:active {
       transform: translateY(2px);
-      box-shadow: 0 2px 0 #000;
+      box-shadow: 0 1px 0 #000;
     }
 
     .btn:disabled {
       opacity: 0.45;
       cursor: not-allowed;
       transform: none !important;
-      box-shadow: 0 4px 0 #000 !important;
+      box-shadow: 0 3px 0 #000 !important;
     }
 
+    /* Restart Button Fitting Guarantee */
     .btn-restart {
       grid-column: span 2;
       background-color: var(--success-color);
       border-color: #2ed573;
       color: #000;
-      font-size: 1.2rem;
+      font-size: 1rem;
+      padding: 12px 10px;
+      text-shadow: none;
     }
 
     .btn-restart:hover {
@@ -327,28 +330,28 @@
       color: #fff;
     }
 
-    /* Optimized Screen Adaptation for Mobile Viewports */
-    @media (max-width: 600px) {
-      .game-container { padding: 12px; max-height: 96dvh; }
-      .game-title { font-size: 1rem; }
-      .status-bar { font-size: 0.82rem; }
-      .stage-card { padding: 12px 10px; }
-      .stage-icon { font-size: 3.8rem; margin-bottom: 8px; }
-      .story-text { font-size: 0.98rem; line-height: 1.6; }
-      .btn-group { grid-template-columns: 1fr; gap: 8px; }
-      .btn-restart { grid-column: span 1; }
-      .btn { font-size: 0.95rem; padding: 12px 8px; }
-      .grade-badge { font-size: 1rem; padding: 4px 10px; }
+    /* Screen Adaptation for Small Devices */
+    @media (max-width: 480px) {
+      .game-container { padding: 10px; max-height: 96dvh; }
+      .game-title { font-size: 0.9rem; }
+      .status-bar { font-size: 0.75rem; }
+      .stage-card { padding: 8px 8px; }
+      .stage-icon { font-size: 2.8rem; margin-bottom: 4px; }
+      .story-text { font-size: 0.85rem; line-height: 1.5; }
+      .btn-group { grid-template-columns: 1fr; gap: 6px; }
+      .btn-restart { grid-column: span 1; font-size: 0.92rem; padding: 10px; }
+      .btn { font-size: 0.82rem; padding: 10px 6px; }
+      .grade-badge { font-size: 0.85rem; padding: 4px 8px; }
     }
   </style>
 </head>
 <body class="theme-forest">
 
-  <!-- Topmost Canvas for Falling Pixel Gravel/Debris -->
+  <!-- Topmost Canvas for Pixel Gravel Drop Effects -->
   <canvas id="top-debris-canvas"></canvas>
 
   <div class="game-container" id="game-container">
-    <!-- Header Information Area -->
+    <!-- Header Area -->
     <div class="header">
       <h1 class="game-title">🌲 像素祕寶迷宮 🗿</h1>
       <div class="status-bar">
@@ -357,7 +360,7 @@
       </div>
     </div>
 
-    <!-- Central Interactive Area -->
+    <!-- Center Stage Area -->
     <div class="stage-card" onclick="skipTypewriter()">
       <div id="grade-container"></div>
       <div class="stage-icon" id="stage-icon">🌲</div>
@@ -366,7 +369,7 @@
       </div>
     </div>
 
-    <!-- Control Buttons Area -->
+    <!-- Control Buttons -->
     <div class="controls">
       <div class="btn-group" id="action-buttons">
         <button class="btn" onclick="makeChoice('L')">⬅️ 向左走 [A]</button>
@@ -377,7 +380,7 @@
 
   <script>
     /* ==========================================
-       2. Game Story Data Structure
+       2. Game Story Data
        ========================================== */
     const storyTree = {
       "START": {
@@ -507,7 +510,7 @@
     };
 
     /* ==========================================
-       3. Topmost Pixel Gravel Particles Engine
+       3. Topmost Pixel Gravel Particle Engine
        ========================================== */
     const canvas = document.getElementById('top-debris-canvas');
     const ctx = canvas.getContext('2d');
@@ -526,15 +529,13 @@
       }
 
       reset() {
-        // Spawn from top overlay region
         this.x = Math.random() * canvas.width;
         this.y = -10 - Math.random() * 40;
-        this.size = Math.floor(Math.random() * 7) + 4; // Pixelated blocky shapes
-        this.speedY = Math.random() * 9 + 5;           // High speed drop
+        this.size = Math.floor(Math.random() * 6) + 4; 
+        this.speedY = Math.random() * 10 + 6; 
         this.speedX = (Math.random() - 0.5) * 5;
-        this.gravity = 0.35;
+        this.gravity = 0.4;
         
-        // Theme aware debris colors
         const currentTheme = document.body.className;
         let palette = ['#73e86b', '#3d8238', '#99f291', '#ffffff'];
         if (currentTheme.includes('ruins')) {
@@ -562,21 +563,18 @@
         ctx.save();
         ctx.globalAlpha = this.opacity;
         ctx.fillStyle = this.color;
-        // Crisp pixel block rendering
         ctx.fillRect(Math.floor(this.x), Math.floor(this.y), this.size, this.size);
         ctx.restore();
       }
     }
 
-    // Trigger Screen Shake & Explosive Pixel Debris Transition
     function triggerPixelDebrisTransition() {
       const gameContainer = document.getElementById('game-container');
       gameContainer.classList.remove('shake');
-      void gameContainer.offsetWidth; // Trigger DOM reflow
+      void gameContainer.offsetWidth; // Force DOM reflow
       gameContainer.classList.add('shake');
 
-      // Generate burst of pixel debris on top layer
-      for (let i = 0; i < 50; i++) {
+      for (let i = 0; i < 60; i++) {
         particles.push(new DebrisParticle());
       }
     }
@@ -595,7 +593,7 @@
     animateDebris();
 
     /* ==========================================
-       4. Game Core Logic & Typewriter Engine
+       4. Core Game Logic
        ========================================== */
     let currentPath = "START";
     let typewriterTimer = null;
@@ -647,10 +645,7 @@
       const node = storyTree[currentPath];
       fullText = node.text;
 
-      // Update background theme class
       document.body.className = node.theme;
-
-      // Execute top-layer pixel debris animation
       triggerPixelDebrisTransition();
 
       document.getElementById('stage-icon').textContent = node.icon;
@@ -698,7 +693,6 @@
       return path.split('').map(char => char === 'L' ? '⬅️' : '➡️').join(' ');
     }
 
-    // Initialize game state on page load
     window.onload = function() {
       renderNode();
     };
