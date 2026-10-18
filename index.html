@@ -4,20 +4,58 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>像素祕寶迷宮 - Pixel Treasure Hunt</title>
-  <!-- 導入 Google 復古像素字體 -->
+  <!-- Google Pixel Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Noto+Sans+TC:wght@500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Noto+Sans+TC:wght@700;900&display=swap" rel="stylesheet">
   
   <style>
+    /* ==========================================
+       1. Visual Styles & Dynamic Themes
+       ========================================== */
     :root {
-      --bg-color: #0f0f1b;
-      --card-bg: #1a1a2e;
-      --border-color: #f4c430;
-      --text-color: #e0e0e0;
+      --bg-color: #0d130e;
+      --card-bg: #152217;
+      --border-color: #72db6c;
+      --text-color: #e2fce0;
       --accent-color: #ff4757;
       --success-color: #2ed573;
-      --highlight-color: #eccc68;
+      --highlight-color: #f4c430;
+      --particle-color: #588e53;
+    }
+
+    /* Dynamic Stage Themes */
+    body.theme-forest {
+      --bg-color: #0b140d;
+      --card-bg: #142417;
+      --border-color: #6edb65;
+      --text-color: #e5ffe3;
+      --particle-color: #73e86b;
+      background-image: 
+        radial-gradient(#1e3b22 15%, transparent 16%),
+        radial-gradient(#1e3b22 15%, transparent 16%);
+    }
+
+    body.theme-ruins {
+      --bg-color: #171410;
+      --card-bg: #29221a;
+      --border-color: #f4c430;
+      --text-color: #fff4d1;
+      --particle-color: #cbb27a;
+      background-image: 
+        radial-gradient(#3d3223 15%, transparent 16%),
+        radial-gradient(#3d3223 15%, transparent 16%);
+    }
+
+    body.theme-cave {
+      --bg-color: #0b0c16;
+      --card-bg: #14172b;
+      --border-color: #00d2d3;
+      --text-color: #e0f8ff;
+      --particle-color: #64a6bd;
+      background-image: 
+        radial-gradient(#202545 15%, transparent 16%),
+        radial-gradient(#202545 15%, transparent 16%);
     }
 
     * {
@@ -34,124 +72,159 @@
       width: 100vw;
       height: 100vh;
       margin: 0;
-      padding: 15px;
+      padding: 16px;
       display: flex;
       justify-content: center;
       align-items: center;
-      background-image: 
-        radial-gradient(#222 10%, transparent 11%),
-        radial-gradient(#222 10%, transparent 11%);
-      background-size: 20px 20px;
-      background-position: 0 0, 10px 10px;
+      background-size: 24px 24px;
+      background-position: 0 0, 12px 12px;
+      transition: background-color 0.8s ease, color 0.8s ease;
+      overflow: hidden;
+      position: relative;
     }
 
-    /* 滿版 Arcade 框架 */
+    /* Canvas for Particles & Falling Gravel */
+    #particle-canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* Fullscreen Arcade Frame */
     .game-container {
       width: 100%;
       height: 100%;
       background-color: var(--card-bg);
-      border: 4px solid var(--border-color);
-      box-shadow: 0 0 20px rgba(244, 196, 48, 0.2), inset 0 0 15px rgba(0,0,0,0.8);
-      border-radius: 8px;
-      padding: 24px;
+      border: 6px solid var(--border-color);
+      box-shadow: 0 0 30px rgba(0, 0, 0, 0.9), inset 0 0 20px rgba(0,0,0,0.8);
+      border-radius: 12px;
+      padding: 28px;
       display: flex;
       flex-direction: column;
       gap: 20px;
       position: relative;
+      z-index: 5;
       overflow: hidden;
+      transition: border-color 0.8s ease, background-color 0.8s ease;
     }
 
-    /* 掃描線效果 (Scanlines) */
+    /* Screen Shake Animation */
+    .shake {
+      animation: shake-anim 0.45s cubic-bezier(.36,.07,.19,.97) both;
+    }
+
+    @keyframes shake-anim {
+      10%, 90% { transform: translate3d(-3px, 1px, 0); }
+      20%, 80% { transform: translate3d(5px, -3px, 0); }
+      30%, 50%, 70% { transform: translate3d(-7px, 5px, 0); }
+      40%, 60% { transform: translate3d(7px, -4px, 0); }
+    }
+
+    /* CRT Scanlines Effect */
     .game-container::after {
       content: " ";
       display: block;
       position: absolute;
       top: 0; left: 0; bottom: 0; right: 0;
-      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%);
+      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.3) 50%);
       background-size: 100% 4px;
       z-index: 10;
       pointer-events: none;
       opacity: 0.6;
     }
 
-    /* 頂部標題與狀態 */
+    /* Header & Progress Bar */
     .header {
       text-align: center;
-      border-bottom: 2px dashed #333;
-      padding-bottom: 15px;
+      border-bottom: 3px dashed var(--border-color);
+      padding-bottom: 16px;
+      transition: border-color 0.8s ease;
     }
 
     .game-title {
       font-family: 'Press Start 2P', 'Noto Sans TC', cursive;
-      font-size: 1.5rem;
-      color: var(--border-color);
-      text-shadow: 2px 2px #000;
-      margin-bottom: 8px;
+      font-size: 2rem;
+      color: var(--highlight-color);
+      text-shadow: 3px 3px #000;
+      margin-bottom: 12px;
+      letter-spacing: 2px;
     }
 
     .status-bar {
       display: flex;
       justify-content: space-between;
-      font-size: 1rem;
-      color: #888;
+      font-size: 1.25rem;
+      font-weight: 900;
+      color: var(--border-color);
       font-family: monospace;
-      max-width: 800px;
+      max-width: 900px;
       margin: 0 auto;
+      transition: color 0.8s ease;
     }
 
-    /* 主畫面與插圖 */
+    /* Center Stage Area */
     .stage-card {
-      background: #0d0d18;
-      border: 2px solid #333;
-      border-radius: 4px;
-      padding: 30px;
+      background: rgba(0, 0, 0, 0.4);
+      border: 3px solid var(--border-color);
+      border-radius: 8px;
+      padding: 36px 28px;
       text-align: center;
       flex: 1;
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      cursor: pointer; /* 提示點擊跳過打字 */
+      cursor: pointer;
+      position: relative;
+      transition: border-color 0.8s ease;
     }
 
+    /* Extra-Large Pixel Icon */
     .stage-icon {
-      font-size: 6rem;
-      margin-bottom: 20px;
-      filter: drop-shadow(0 4px 6px rgba(0,0,0,0.5));
-      animation: bounce 2s infinite ease-in-out;
+      font-size: 7.5rem;
+      margin-bottom: 24px;
+      filter: drop-shadow(0 8px 12px rgba(0,0,0,0.8));
+      animation: float-bounce 2.5s infinite ease-in-out;
     }
 
-    @keyframes bounce {
+    @keyframes float-bounce {
       0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-10px); }
+      50% { transform: translateY(-14px); }
     }
 
-    /* 文字打字機區域與光標樣式 */
+    /* Extra-Large Typography */
     .story-text-container {
-      max-width: 800px;
-      min-height: 4em; /* 避免文字打字時高度跳動 */
+      max-width: 950px;
+      min-height: 4.5em;
       display: flex;
       justify-content: center;
       align-items: center;
     }
 
     .story-text {
-      font-size: 1.2rem;
-      line-height: 1.8;
+      font-size: 1.6rem;
+      line-height: 2.1;
+      font-weight: 700;
       color: var(--text-color);
       text-align: center;
       white-space: pre-wrap;
+      text-shadow: 2px 2px 4px #000;
     }
 
-    /* 打字機閃爍光標 */
+    /* Golden Flashing Cursor */
     .typing-cursor {
       display: inline-block;
-      width: 8px;
-      height: 1.2em;
-      background-color: var(--border-color);
+      width: 12px;
+      height: 1.3em;
+      background-color: var(--highlight-color);
       vertical-align: middle;
-      margin-left: 4px;
+      margin-left: 6px;
       animation: blink 0.7s infinite;
+      box-shadow: 0 0 8px var(--highlight-color);
     }
 
     @keyframes blink {
@@ -159,29 +232,29 @@
       50% { opacity: 0; }
     }
 
-    /* 結局等級標籤 */
+    /* Ending Badges */
     .grade-badge {
       display: inline-block;
       font-family: 'Press Start 2P', cursive;
-      font-size: 1.4rem;
-      padding: 8px 16px;
-      border-radius: 4px;
-      margin-bottom: 15px;
-      text-shadow: 1px 1px #000;
+      font-size: 1.8rem;
+      padding: 10px 20px;
+      border-radius: 6px;
+      margin-bottom: 20px;
+      text-shadow: 2px 2px #000;
     }
 
-    .grade-SSR { background-color: #ff4757; color: #fff; border: 2px solid #ffa502; }
-    .grade-SR { background-color: #1e90ff; color: #fff; }
+    .grade-SSR { background-color: #ff4757; color: #fff; border: 3px solid #ffa502; box-shadow: 0 0 15px #ff4757; }
+    .grade-SR { background-color: #1e90ff; color: #fff; border: 2px solid #70a1ff; }
     .grade-NORMAL { background-color: #747d8c; color: #fff; }
-    .grade-BAD { background-color: #2f3542; color: #ff6b81; border: 1px solid #ff4757; }
+    .grade-BAD { background-color: #2f3542; color: #ff6b81; border: 2px solid #ff4757; }
 
-    /* 按鈕控制區 */
+    /* Control Panel & Arcade Buttons */
     .controls {
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 16px;
       z-index: 20;
-      max-width: 900px;
+      max-width: 1000px;
       width: 100%;
       margin: 0 auto;
     }
@@ -189,44 +262,46 @@
     .btn-group {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 16px;
+      gap: 20px;
     }
 
     .btn {
-      background-color: #2f3542;
+      background-color: #222733;
       color: #fff;
-      border: 2px solid var(--border-color);
-      padding: 18px 12px;
-      font-size: 1.1rem;
-      font-weight: bold;
+      border: 3px solid var(--border-color);
+      padding: 22px 16px;
+      font-size: 1.35rem;
+      font-weight: 900;
       font-family: inherit;
       cursor: pointer;
-      border-radius: 4px;
-      box-shadow: 0 4px 0 #000;
+      border-radius: 8px;
+      box-shadow: 0 6px 0 #000;
       transition: all 0.1s ease;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
+      gap: 12px;
+      text-shadow: 1px 1px 2px #000;
     }
 
     .btn:hover {
       background-color: var(--border-color);
       color: #000;
-      transform: translateY(-2px);
-      box-shadow: 0 6px 0 #000;
+      text-shadow: none;
+      transform: translateY(-3px);
+      box-shadow: 0 9px 0 #000;
     }
 
     .btn:active {
-      transform: translateY(2px);
-      box-shadow: 0 2px 0 #000;
+      transform: translateY(3px);
+      box-shadow: 0 3px 0 #000;
     }
 
     .btn:disabled {
-      opacity: 0.5;
+      opacity: 0.4;
       cursor: not-allowed;
       transform: none !important;
-      box-shadow: 0 4px 0 #000 !important;
+      box-shadow: 0 6px 0 #000 !important;
     }
 
     .btn-restart {
@@ -234,6 +309,7 @@
       background-color: var(--success-color);
       border-color: #2ed573;
       color: #000;
+      font-size: 1.5rem;
     }
 
     .btn-restart:hover {
@@ -241,42 +317,44 @@
       color: #fff;
     }
 
-    @media (max-width: 600px) {
-      .btn-group {
-        grid-template-columns: 1fr;
-      }
-      .btn-restart {
-        grid-column: span 1;
-      }
-      .stage-icon {
-        font-size: 4rem;
-      }
-      .story-text {
-        font-size: 1rem;
-      }
+    /* Responsive Adjustments */
+    @media (max-width: 768px) {
+      .game-title { font-size: 1.4rem; }
+      .status-bar { font-size: 1rem; }
+      .btn-group { grid-template-columns: 1fr; gap: 12px; }
+      .btn-restart { grid-column: span 1; }
+      .stage-icon { font-size: 5rem; margin-bottom: 12px; }
+      .story-text { font-size: 1.25rem; line-height: 1.8; }
+      .btn { font-size: 1.15rem; padding: 16px 12px; }
+      .grade-badge { font-size: 1.3rem; }
     }
   </style>
 </head>
-<body>
+<body class="theme-forest">
 
-  <div class="game-container">
+  <!-- Particle Background Canvas -->
+  <canvas id="particle-canvas"></canvas>
+
+  <div class="game-container" id="game-container">
+    <!-- Header Area -->
     <div class="header">
-      <h1 class="game-title">像素祕寶迷宮</h1>
+      <h1 class="game-title">🌲 像素祕寶迷宮 🗿</h1>
       <div class="status-bar">
-        <span id="stage-indicator">STAGE: 1 / 3</span>
+        <span id="stage-indicator">STAGE: 1 / 3 (森林)</span>
         <span id="path-history">PATH: START</span>
       </div>
     </div>
 
-    <!-- 點擊中央卡片可直接跳過打字動畫，顯示完整文字 -->
+    <!-- Center Interactive Card -->
     <div class="stage-card" onclick="skipTypewriter()">
       <div id="grade-container"></div>
-      <div class="stage-icon" id="stage-icon">🗺️</div>
+      <div class="stage-icon" id="stage-icon">🌲</div>
       <div class="story-text-container">
         <span class="story-text" id="story-text"></span><span class="typing-cursor" id="typing-cursor"></span>
       </div>
     </div>
 
+    <!-- Controls Area -->
     <div class="controls">
       <div class="btn-group" id="action-buttons">
         <button class="btn" onclick="makeChoice('L')">⬅️ 向左走 [A]</button>
@@ -286,79 +364,97 @@
   </div>
 
   <script>
+    /* ==========================================
+       2. Game Data & Decision Tree
+       ========================================== */
     const storyTree = {
       "START": {
-        stage: "1 / 3",
-        icon: "🗺️",
-        text: "你踏入傳說中的古代遺跡，空氣中彌漫著塵土與冒險的氣息。前面的通道分成了兩條岔路...",
-        leftBtn: "⬅️ 巨石通道",
-        rightBtn: "➡️ 水晶溶洞"
+        stage: "1 / 3 (森林)",
+        theme: "theme-forest",
+        icon: "🌲",
+        text: "你踏入古老而迷霧繚繞的神秘森林，空氣中瀰漫著泥土與未知氣息。前面的微光暗道分成了兩條岔路...",
+        leftBtn: "⬅️ 巨石遺跡通道",
+        rightBtn: "➡️ 水晶螢光溶洞"
       },
+      // --- Stage 1 Choices (Ruins) ---
       "L": {
-        stage: "2 / 3",
+        stage: "2 / 3 (遺跡)",
+        theme: "theme-ruins",
         icon: "🗿",
-        text: "【巨石通道】這條通道牆上刻滿古老符文。走著走著來到石門前，兩側各有一條狹窄走廊。",
-        leftBtn: "⬅️ 探查古井",
-        rightBtn: "➡️ 走向獸吼聲"
+        text: "【巨石通道】穿越迷霧後，古老石牆刻滿符文。走進拱門前，面前出現兩條被藤蔓覆蓋的道路。",
+        leftBtn: "⬅️ 探查古井走廊",
+        rightBtn: "➡️ 走向獸吼狹道"
       },
       "R": {
-        stage: "2 / 3",
+        stage: "2 / 3 (遺跡)",
+        theme: "theme-ruins",
         icon: "💎",
-        text: "【水晶溶洞】無數發光晶石照亮地下河流，景色絢麗卻暗藏殺機。懸崖邊有兩條路可跨越。",
-        leftBtn: "⬅️ 祭壇走廊",
-        rightBtn: "➡️ 瀑布吊橋"
+        text: "【水晶溶洞】無數發光晶石照亮地下河流，景色絢麗卻暗藏殺機。懸崖邊有兩座古老橋樑可跨越。",
+        leftBtn: "⬅️ 踏上祭壇走廊",
+        rightBtn: "➡️ 跨越瀑布吊橋"
       },
+      // --- Stage 2 Choices (Underground Caverns) ---
       "LL": {
-        stage: "3 / 3",
+        stage: "3 / 3 (地底)",
+        theme: "theme-cave",
         icon: "🕳️",
-        text: "【古井深處】面前出現兩尊古老的守護者石像，各自伸出一隻手指向不同的出口。",
+        text: "【古井深處】深入地底暗道，面前出現兩尊古老的守護者石像，各自伸出一隻手指向不同的巨型石門。",
         leftBtn: "⬅️ 太陽黃金門",
         rightBtn: "➡️ 月亮青銅門"
       },
       "LR": {
-        stage: "3 / 3",
+        stage: "3 / 3 (地底)",
+        theme: "theme-cave",
         icon: "🦇",
-        text: "【獸吼狹道】盡頭居然是一隻沉睡的巨型岩石怪！巨獸身後有兩個通往深處的洞口。",
+        text: "【獸吼狹道】狹道盡頭居然是一隻沉睡的巨型岩石怪！巨獸身後有兩個通往極深處的洞口。",
         leftBtn: "⬅️ 鑽左側狹縫",
         rightBtn: "➡️ 快速衝過右側"
       },
       "RL": {
-        stage: "3 / 3",
+        stage: "3 / 3 (地底)",
+        theme: "theme-cave",
         icon: "🔮",
-        text: "【祭壇走廊】祭壇中央擺著一本散發紫光的魔導書，左右兩側各有一個神秘機關按鈕。",
+        text: "【祭壇走廊】地底祭壇中央擺著一本散發紫光的古老魔導書，左右兩側各有一個神秘機關按鈕。",
         leftBtn: "⬅️ 紅寶石按鈕(力量)",
         rightBtn: "➡️ 藍寶石按鈕(智慧)"
       },
       "RR": {
-        stage: "3 / 3",
+        stage: "3 / 3 (地底)",
+        theme: "theme-cave",
         icon: "🌉",
-        text: "【瀑布吊橋】吊橋搖搖欲墜，你順利抵達對岸。面前出現兩條濕滑的石階梯。",
-        leftBtn: "⬅️ 向上石階",
-        rightBtn: "➡️ 向下石階"
+        text: "【瀑布吊橋】吊橋搖搖欲墜，你驚險抵達對岸。面前出現兩條通往不同深處的濕滑石階。",
+        leftBtn: "⬅️ 向上高處石階",
+        rightBtn: "➡️ 向下地底石階"
       },
+
+      // --- Endings (8 Distinct Outcomes) ---
       "LLL": {
         isEnding: true,
+        theme: "theme-cave",
         grade: "SSR",
         icon: "👑",
         title: "失落的法老寶藏",
-        text: "門後堆滿了黃金與古代法老的皇冠！你成功帶走無數財寶，成為世上最富有、最傳奇的冒險家！"
+        text: "門後堆滿了無盡黃金與古代法老的皇冠！你成功帶走無數寶藏，成為世上最富有、最傳奇的冒險家！"
       },
       "LLR": {
         isEnding: true,
+        theme: "theme-cave",
         grade: "BAD",
         icon: "⏳",
         title: "時光詛咒",
-        text: "月亮石門觸發了古代時間陷阱！你的身體逐漸變成石頭，永遠成為了遺跡的一部分..."
+        text: "月亮石門觸發了古代時間陷阱！你的身體逐漸變成石頭，永遠成為了地底遺跡的一部分..."
       },
       "LRL": {
         isEnding: true,
+        theme: "theme-cave",
         grade: "SR",
         icon: "🐾",
         title: "巨獸馴服者",
-        text: "你靈巧地鑽過狹縫，意外發現了巨獸幼崽並給予餵食。巨獸醒來後將你視為主人，護送你帶滿口袋寶石平安離開！"
+        text: "你靈巧地鑽過狹縫，意外發現了巨獸幼崽並給予餵食。巨獸醒來後將你視為主人，護送你帶滿寶石平安離開！"
       },
       "LRR": {
         isEnding: true,
+        theme: "theme-cave",
         grade: "BAD",
         icon: "🕳️",
         title: "陷阱坑洞",
@@ -366,6 +462,7 @@
       },
       "RLL": {
         isEnding: true,
+        theme: "theme-cave",
         grade: "BAD",
         icon: "💥",
         title: "貪婪的代價",
@@ -373,6 +470,7 @@
       },
       "RLR": {
         isEnding: true,
+        theme: "theme-cave",
         grade: "SSR",
         icon: "🧙‍♂️",
         title: "大賢者傳承",
@@ -380,13 +478,15 @@
       },
       "RRL": {
         isEnding: true,
+        theme: "theme-cave",
         grade: "NORMAL",
         icon: "🏛️",
         title: "空無一物的密室",
-        text: "向上走進密室，裡面只有空箱子與一張寫著「有人先來過了」的紙條。雖然沒拿到寶藏，但你平安無事地離開了。"
+        text: "向上走進密室，裡面只有空箱子與一張寫著「有人先來過了」的紙條。雖然沒拿到寶藏，但你平安地回到了地表。"
       },
       "RRR": {
         isEnding: true,
+        theme: "theme-cave",
         grade: "SR",
         icon: "🧜‍♀️",
         title: "人魚之歌與地底湖",
@@ -394,13 +494,119 @@
       }
     };
 
+    /* ==========================================
+       3. Particle System & Falling Debris
+       ========================================== */
+    const canvas = document.getElementById('particle-canvas');
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    class Particle {
+      constructor(type = 'ambient') {
+        this.type = type;
+        this.reset();
+      }
+
+      reset() {
+        this.x = Math.random() * canvas.width;
+        if (this.type === 'debris') {
+          // Gravel / Rock Debris dropping from top
+          this.y = -20 - Math.random() * 50;
+          this.size = Math.random() * 7 + 3;
+          this.speedY = Math.random() * 8 + 4;
+          this.speedX = (Math.random() - 0.5) * 4;
+          this.color = ['#888888', '#aaaaaa', '#555555', '#cbb27a'][Math.floor(Math.random() * 4)];
+          this.opacity = 1;
+        } else {
+          // Ambient particles (fireflies, leaves, dust)
+          this.y = Math.random() * canvas.height;
+          this.size = Math.random() * 4 + 1.5;
+          this.speedY = (Math.random() - 0.5) * 0.8;
+          this.speedX = (Math.random() - 0.5) * 0.8;
+          this.color = getComputedStyle(document.body).getPropertyValue('--particle-color').trim() || '#73e86b';
+          this.opacity = Math.random() * 0.7 + 0.3;
+        }
+      }
+
+      update() {
+        this.x += this.speedX;
+        this.y += this.speedY;
+
+        if (this.type === 'debris') {
+          this.speedY += 0.2; // Gravity
+          if (this.y > canvas.height) {
+            this.opacity = 0;
+          }
+        } else {
+          if (this.x < 0 || this.x > canvas.width || this.y < 0 || this.y > canvas.height) {
+            this.reset();
+          }
+        }
+      }
+
+      draw() {
+        ctx.save();
+        ctx.globalAlpha = this.opacity;
+        ctx.fillStyle = this.color;
+        if (this.type === 'debris') {
+          // Square pixel debris
+          ctx.fillRect(this.x, this.y, this.size, this.size);
+        } else {
+          ctx.beginPath();
+          ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        ctx.restore();
+      }
+    }
+
+    // Initialize ambient particles
+    for (let i = 0; i < 45; i++) {
+      particles.push(new Particle('ambient'));
+    }
+
+    // Trigger Screen Shake and Falling Gravel Effect
+    function triggerGravelFall() {
+      const gameContainer = document.getElementById('game-container');
+      gameContainer.classList.remove('shake');
+      void gameContainer.offsetWidth; // Trigger reflow
+      gameContainer.classList.add('shake');
+
+      // Spawn falling rock debris
+      for (let i = 0; i < 35; i++) {
+        particles.push(new Particle('debris'));
+      }
+    }
+
+    function animateParticles() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      for (let i = particles.length - 1; i >= 0; i--) {
+        particles[i].update();
+        particles[i].draw();
+        if (particles[i].opacity <= 0) {
+          particles.splice(i, 1);
+        }
+      }
+      requestAnimationFrame(animateParticles);
+    }
+    animateParticles();
+
+    /* ==========================================
+       4. Main Game Logic & Typewriter Animation
+       ========================================== */
     let currentPath = "START";
     let typewriterTimer = null;
     let fullText = "";
     let isTyping = false;
-    const typingSpeed = 40; // 打字速度：每個字 40 毫秒
+    const typingSpeed = 35;
 
-    // 打字機效果實作
     function typeWriter(text, index = 0) {
       const textElement = document.getElementById('story-text');
       const cursorElement = document.getElementById('typing-cursor');
@@ -409,7 +615,7 @@
         textElement.textContent = "";
         cursorElement.style.display = "inline-block";
         isTyping = true;
-        toggleButtons(true); // 打字時暫時禁用按鈕，防止連續快速點擊
+        toggleButtons(true);
       }
 
       if (index < text.length) {
@@ -420,11 +626,10 @@
       } else {
         isTyping = false;
         cursorElement.style.display = "none";
-        toggleButtons(false); // 打字結束恢復按鈕點擊
+        toggleButtons(false);
       }
     }
 
-    // 點擊中間卡片可以立即跳過打字，顯示完整文字
     function skipTypewriter() {
       if (isTyping) {
         clearTimeout(typewriterTimer);
@@ -435,30 +640,34 @@
       }
     }
 
-    // 切換按鈕的可用狀態
     function toggleButtons(disabled) {
       const buttons = document.querySelectorAll('#action-buttons button');
       buttons.forEach(btn => btn.disabled = disabled);
     }
 
     function renderNode() {
-      // 換頁時先清除舊的打字定時器
       if (typewriterTimer) clearTimeout(typewriterTimer);
 
       const node = storyTree[currentPath];
       fullText = node.text;
 
+      // Update background theme
+      document.body.className = node.theme;
+
+      // Trigger Gravel Fall and Screen Shake
+      triggerGravelFall();
+
       document.getElementById('stage-icon').textContent = node.icon;
       
       if (node.isEnding) {
-        document.getElementById('stage-indicator').textContent = "STAGE: END";
+        document.getElementById('stage-indicator').textContent = "STAGE: END (終點)";
         document.getElementById('path-history').textContent = `PATH: ${formatPath(currentPath)}`;
         
         document.getElementById('grade-container').innerHTML = 
           `<span class="grade-badge grade-${node.grade}">${node.grade} - ${node.title}</span>`;
         
         document.getElementById('action-buttons').innerHTML = 
-          `<button class="btn btn-restart" onclick="restartGame()">🔄 重新開始冒險</button>`;
+          `<button class="btn btn-restart" onclick="restartGame()">🔄 重新探險迷宮</button>`;
       } else {
         document.getElementById('stage-indicator').textContent = `STAGE: ${node.stage}`;
         document.getElementById('path-history').textContent = `PATH: ${formatPath(currentPath)}`;
@@ -470,12 +679,11 @@
         `;
       }
 
-      // 啟動打字機效果
       typeWriter(fullText);
     }
 
     function makeChoice(direction) {
-      if (isTyping) return; // 打字未完成時防止連續點擊
+      if (isTyping) return;
       if (currentPath === "START") {
         currentPath = direction;
       } else {
@@ -494,6 +702,7 @@
       return path.split('').map(char => char === 'L' ? '⬅️' : '➡️').join(' ');
     }
 
+    // Initialize game
     renderNode();
   </script>
 </body>
